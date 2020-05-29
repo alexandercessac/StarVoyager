@@ -61,20 +61,68 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
     break;
    case KEY_LEFT:
      if(listLeft[cIndex]>=exchange[i]&&listRight[i]>=1){
+      //move 1 resource from right list to left list
       listLeft[i]++;
       listRight[i]--;
+      //exchange ammount of currency for selected resource
       listLeft[cIndex]-=exchange[i];
       listRight[cIndex]+=exchange[i];
      }
     break;
    case KEY_RIGHT:
      if(listLeft[i]>=1&&listRight[cIndex]>=exchange[i]){
+      //move 1 resource from right list to left list
       listLeft[i]--;
       listRight[i]++;
+      //exchange amount of currency for selected resource
       listLeft[cIndex]+=exchange[i];
       listRight[cIndex]-=exchange[i];
      }
     break;
+   case '<':
+    //check if anything to buy
+    if(listRight[i]>=1){
+     //check if can buy all
+     if(listLeft[cIndex]>listRight[i]*exchange[i]){
+      //pay for all
+      listLeft[cIndex]-=listRight[i]*exchange[i];
+      listRight[cIndex]+=listRight[i]*exchange[i];
+      //move all
+      listLeft[i]+=listRight[i];
+      listRight[i]-=listRight[i];
+     } else {
+      //max = listLeft[cIndex]/exchange[i]
+      //move max that listLeft can afford
+      listLeft[i]+=listLeft[cIndex]/exchange[i];
+      listRight[i]-=listLeft[cIndex]/exchange[i];
+      //pay for max that listLeft can afford
+      listRight[cIndex]+=(listLeft[cIndex]/exchange[i])*exchange[i];
+      listLeft[cIndex]-=(listLeft[cIndex]/exchange[i])*exchange[i];
+     }
+    }
+   break;
+   case '>':
+    //check if anything to buy
+    if(listLeft[i]>=1){
+     //check if can buy all
+     if(listRight[cIndex]>listLeft[i]*exchange[i]){
+      //pay for all
+      listRight[cIndex]-=listLeft[i]*exchange[i];
+      listLeft[cIndex]+=listLeft[i]*exchange[i];
+      //move all
+      listRight[i]+=listLeft[i];
+      listLeft[i]-=listLeft[i];
+     } else {
+      //max = listRight[cIndex]/exchange[i]
+      //move max that listRight can afford
+      listRight[i]+=listRight[cIndex]/exchange[i];
+      listLeft[i]-=listRight[cIndex]/exchange[i];
+      //pay for max that listRight can afford
+      listLeft[cIndex]+=(listRight[cIndex]/exchange[i])*exchange[i];
+      listRight[cIndex]-=(listRight[cIndex]/exchange[i])*exchange[i];
+     }
+    }
+   break;
   }
 
   mvwprintw(w, topPad, leftPad, "%-*s%-*s%-*s%-*s%-*s", width/6, "Inventory", width/6, " ", width/3, "Price", width/6, "Shop", width/6, " ");
