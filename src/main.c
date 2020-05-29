@@ -9,8 +9,7 @@
 
 int main()
 {
- //ui
- init();
+ init();//ui.h
 
  int YMAX, XMAX, XMID, YMID, YDIFF, XDIFF, XSHIP, YSHIP;
  //set screen size
@@ -31,8 +30,6 @@ int main()
 
  struct Planet p=MakePlanet(5,5,"urth");
  int INVENTORY[]={3,0,10,0,0};
- //todo planets
-// map[YMID][XMID-1]='0';
 
  int tmpY=0,tmpX=0;
  struct Planet* planets=malloc(sizeof(struct Planet)*PLANET_COUNT);
@@ -41,10 +38,11 @@ int main()
 //  tmpY=rand()%LIMIT;
 //  tmpX=rand()%LIMIT;
   while(map[tmpY][tmpX]=='0')
-//  {tmpY=rand()%LIMIT;tmpX=rand()%LIMIT;}
+//  {tmpY=rand()%LIMIT;tmpX=rand()%LIMIT;} //place randomly
   {tmpX=tmpX+2;}
   planets[j]=MakePlanet(tmpY,tmpX,Planet_Names[j]);
   map[tmpY][tmpX]='0';
+//debug
 // printw("%s%d,%d",planets[j].Name,tmpY,tmpX);
 // refresh();
 // getch();
@@ -87,9 +85,9 @@ int main()
 
  //handle planets
  if(map[YSHIP][XSHIP] == '0'){
-   clear();
-   move(YMID, XMID-10);
-   printw("planets: %d!", PLANET_COUNT);
+//   clear();
+//   move(YMID, XMID-10);
+//   printw("planets: %d!", PLANET_COUNT);
 
   //find planet
   for(int j=0;j<PLANET_COUNT;j++) {
@@ -97,8 +95,9 @@ int main()
     clear();
     move(YMID, XMID-10);
     printw("landed on a planet: %s!", planets[j].Name);
-    //todo: menu what to do on planet
     timeout(-1);
+    //todo: randomize inventory on planet to simulate activity
+    //todo: menu what to do on planet
     getch();
     //todo: dont assume trade
     Xfer(5, INVENTORY, planets[j].Inventory, planets[j].ExchangeRate, planets[j].Currency, Resource_Name);
@@ -125,7 +124,7 @@ int main()
  printw("ANY KEY TO EXIT...");
 
  getch();
- fin();
+ fin();//ui.h
 // free(map);
  return 0;
 }
