@@ -51,25 +51,28 @@ int main()
 
 
  //todo delay with tics
- timeout(150);
+ timeout(250);
 
-//main
+ //main
  int direction = '>';
  int input;
  while((input = getch()) != 'q') {
+  //set direction based on input
   switch(input){
    case KEY_RIGHT:direction='>'; break;
    case KEY_LEFT: direction='<'; break;
    case KEY_DOWN: direction='v'; break;
    case KEY_UP:   direction='^'; break;
    case 'z':
+    //increase speed
     //if(delay>25){delay-=25;}
     break;
    case 'x':
+    //decrease speed
     //if(delay<150){delay+=25;}
     break;
   }
-
+  //move based on direction
   switch (direction){
    case '>': if(++XDIFF==LIMIT){XDIFF=0;}
     break;
@@ -83,11 +86,11 @@ int main()
   //track ship position on map
   XSHIP=(XMID+XDIFF)%1000;YSHIP=(YMID+YDIFF)%1000;
 
- //handle planets
- if(map[YSHIP][XSHIP] == '0'){
-//   clear();
-//   move(YMID, XMID-10);
-//   printw("planets: %d!", PLANET_COUNT);
+  //handle planets
+  if(map[YSHIP][XSHIP] == '0'){
+  //   clear();
+  //   move(YMID, XMID-10);
+  //   printw("planets: %d!", PLANET_COUNT);
 
   //find planet
   for(int j=0;j<PLANET_COUNT;j++) {
@@ -95,15 +98,22 @@ int main()
     clear();
     move(YMID, XMID-10);
     printw("landed on a planet: %s!", planets[j].Name);
+    move(YMID+1, XMID-10);
+    printw("pop: %d", planets[j].Population);
+    move(YMID+2, XMID-10);
+    printw("type: %s", PlanetTypeNames[planets[j].Type]);
+    //pause for planet interaction
     timeout(-1);
     //todo: randomize inventory on planet to simulate activity
     //todo: menu what to do on planet
     getch();
     //todo: dont assume trade
     Xfer(5, INVENTORY, planets[j].Inventory, planets[j].ExchangeRate, planets[j].Currency, Resource_Name);
+//    break;
   }
+  DoLocalTrade(&planets[j]);
  }
-
+   //resume
    timeout(150);
  }
   //map is rendered behind ship
@@ -111,12 +121,12 @@ int main()
   //ship is written to the middle of the screen
   mvaddch(YMID,XMID,direction);
   //debug: write location of ship
-  move(0,0);
-  printw("x:%d y:%d",XSHIP,YSHIP);
+  move(0,0); printw("x:%d y:%d",XSHIP,YSHIP);
 
   //draw changes to screen
   refresh();
  }
+//pressed 'q'; exit input loop
 
 //end
  timeout(-1);
