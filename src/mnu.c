@@ -34,14 +34,16 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
  int width=XMAX-leftPad-leftPad;
 
  ////////// print
- mvwprintw(w, topPad, leftPad, "%-*s%-*s%s", width/3, "Inventory", width/3, "Price", "Shop");
+ mvwprintw(w, topPad, leftPad, "%-*s%s%-*s%s", width/3, "Inventory", "Price in ", width/3, names[cIndex], "Shop");
+ wmove(w,topPad+1, leftPad);
+ whline(w, ACS_HLINE, width);
  for(int j=0;j<limit;j++) {
   if(j==i)
    wattron(w, A_STANDOUT);
   else
    wattroff(w, A_STANDOUT);
   //mvwprintw(w,j+1,1, "%s", names[j]);
-  mvwprintw(w, topPad+j+1, leftPad, "%-*s:%-*d%-*d%-*s:%-*d", width/6, names[j], width/6, listLeft[j], width/3, exchange[j], width/6, names[j], width/6, listRight[j]);
+  mvwprintw(w, topPad+j+2, leftPad, "%-*s:%'-*d%'-*d%-*s:%'-*d", width/6, names[j], width/6, listLeft[j], width/3, exchange[j], width/6, names[j], width/6, listRight[j]);
 //  wprintw(w,": %-*d",width/6, listLeft[j], " ");
  }
  wattroff(w,A_STANDOUT);
@@ -81,7 +83,7 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
     break;
    case '<':
     //check if anything to buy
-    if(listRight[i]>=1){
+    if(listRight[i]>=1 && cIndex!=i){
      //check if can buy all
      if(listLeft[cIndex]>listRight[i]*exchange[i]){
       //pay for all
@@ -103,7 +105,7 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
    break;
    case '>':
     //check if anything to buy
-    if(listLeft[i]>=1){
+    if(listLeft[i]>=1 && cIndex!=i){
      //check if can buy all
      if(listRight[cIndex]>listLeft[i]*exchange[i]){
       //pay for all
@@ -124,15 +126,18 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
     }
    break;
   }
-
-  mvwprintw(w, topPad, leftPad, "%-*s%-*s%-*s%-*s%-*s", width/6, "Inventory", width/6, " ", width/3, "Price", width/6, "Shop", width/6, " ");
+  //todo: do not print the entire screen
+  mvwprintw(w, topPad, leftPad, "%-*s%s%-*s%s", width/3, "Inventory", "Price in ", width/3, names[cIndex], "Shop");
+  wmove(w, topPad+1, leftPad);
+  whline(w, ACS_HLINE, width);
+//  mvwprintw(w, topPad, leftPad, "%-*s%-*s%-*s%-*s%-*s", width/6, "Inventory", width/6, " ", width/3, "Price", width/6, "Shop", width/6, " ");
  for(int j=0;j<limit;j++) {
   if(j==i)
    wattron(w, A_STANDOUT);
   else
    wattroff(w, A_STANDOUT);
 
-   mvwprintw(w, topPad+1+j, leftPad, "%-*s:%-*d%-*d%-*s:%-*d", width/6, names[j], width/6, listLeft[j], width/3, exchange[j], width/6, names[j], width/6, listRight[j]);
+   mvwprintw(w, topPad+2+j, leftPad, "%-*s:%'-*d%'-*d%-*s:%'-*d", width/6, names[j], width/6, listLeft[j], width/3, exchange[j], width/6, names[j], width/6, listRight[j]);
   }
   wattroff(w, A_STANDOUT);
   wrefresh(w);
@@ -149,7 +154,7 @@ int Xfer(int total, int listLeft[total], int listRight[total], int exchange[tota
  return 0;
 }
 
-int SelectItem(int srcTotal, char **srcList) {
+int SelectItem(int srcTotal, char **srcList, char *title, int titleLen){
  WINDOW *w;
  int ch, i=0, offset=0, YMAX, XMAX;
  int topPad=1, leftPad=2;
@@ -161,7 +166,7 @@ int SelectItem(int srcTotal, char **srcList) {
  }
  i=0;
  //memcpy(list, srcList, srcTotal * sizeof(char*));
- list[srcTotal]="cancel";
+ list[srcTotal]="Cancel";
  //get bounds of main window
  getmaxyx(stdscr, YMAX, XMAX);
  //create a new window within the main window
@@ -176,6 +181,10 @@ int SelectItem(int srcTotal, char **srcList) {
  //declare the max number of items to show
  int limit=(total > YMAX-topPad-1) ? YMAX-topPad-1 : total;
  int width=(XMAX-leftPad-leftPad);
+
+ //print title if any
+ if(NULL != title && titleLen > 0)
+ { mvwprintw(w, 0, (width/2)-(titleLen/2), title, titleLen); }
  //print {limit} number of items from the list
  //starting with item number {offset} and select item {i}
  wPrintRange(w, topPad, leftPad, limit, width, offset, i, list);
@@ -215,9 +224,15 @@ int SelectItem(int srcTotal, char **srcList) {
     break;
    }
   //print selection
+  //print title if any
+  if(NULL != title && titleLen > 0)
+  { mvwprintw(w, 0, (width/2)-(titleLen/2), title, titleLen); }
   wPrintRange(w, topPad, leftPad, limit, width, offset, i, list);
   wrefresh( w );
  }
  return -1;
 }
 
+int SelectItemBasic(int srcTotal, char **srcList) {
+  return SelectItem(srcTotal, srcList, NULL, 0);
+}
