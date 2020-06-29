@@ -20,7 +20,7 @@ struct Planet MakePlanet(int y, int x, char* name) {
  //seed for random number
  //srand(time(0)); //todo: seed once
 
- p.Type=rand() % 4;
+ p.Type=rand() % PLANET_TYPE_COUNT;
 
  //Resource used for trades
  p.Currency=p.Type;
@@ -29,9 +29,12 @@ struct Planet MakePlanet(int y, int x, char* name) {
  for(int i=0;i<RESOURCE_TYPE_COUNT;i++)
  {
    //Inventory holds the quantity of resource at index
-   p.Inventory[i]=rand() % ((p.Type +1) * 100);
+   p.Inventory[i]=rand() % 1000;
+
+   //Value of resource relative to type of planet
+   int diff = p.Type > i ? p.Type - i : i - p.Type;
    //ExchangeRate holds the value of resource at index
-   p.ExchangeRate[i]=rand() % ((p.Type + 1) * 100);
+   p.ExchangeRate[i]=(rand() % ((PLANET_TYPE_COUNT * 11) - (diff * 10))) + 2;
  }
 
  //ensure 1:1 exchange rate for currency
@@ -67,15 +70,18 @@ void Buy(struct Planet* p, int resource){
  }
 }
 
-void PlanetTrade(struct Planet pSell, struct Planet pBuy, int resource) {
- if(pSell.Inventory[resource] >= 1
-  && pBuy.Inventory[pSell.Currency] >= pSell.ExchangeRate[resource]){
+void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource) {
+ if(pSell->Inventory[resource] >= 1
+  && pBuy->Inventory[pSell->Currency] >= pSell->ExchangeRate[resource]){
   //remove 1 resorce from inventory
-  pSell.Inventory[resource]--;
-  pBuy.Inventory[resource]++;
+  pSell->Inventory[resource]--;
+  pBuy->Inventory[resource]++;
   //add currency for resource at exchange rate
-  pSell.Inventory[pSell.Currency]+=pSell.ExchangeRate[resource];
-  pBuy.Inventory[pSell.Currency]-=pSell.ExchangeRate[resource];
+  pSell->Inventory[pSell->Currency]+=pSell->ExchangeRate[resource];
+  pBuy->Inventory[pSell->Currency]-=pSell->ExchangeRate[resource];
  }
 }
 
+void GenerateCurrency(struct Planet *p) {
+ p->Inventory[p->Currency]+=(rand() % p->Population);
+}

@@ -52,4 +52,8 @@ void DoLocalTrade(struct Planet* p);
 void Buy(struct Planet* p, int resource);
 void Sell(struct Planet* p, int resource);
 
-void PlanetTrade(struct Planet pSell, struct Planet pBuy, int resource);
+//trade a resource between planets
+void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource);
+
+//Generate currency resource based on population
+void GenerateCurrency(struct Planet *p);
