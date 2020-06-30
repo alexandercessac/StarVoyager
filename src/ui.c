@@ -90,17 +90,3 @@ void renderDiff(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000], char
  }
 }
 
-Coordinate* mkcoord(int x, int y) {
- Coordinate* c = malloc(sizeof(*c));
-  c->x = x;
-  c->y = y;
-  //cell->next = NULL;
-  return c;
-}
-
-Grid* mkgrid(Coordinate* min, Coordinate* max){
- Grid* g = malloc(sizeof(*g));
- g->min = min;
- g->max = max;
- return g;
-}
