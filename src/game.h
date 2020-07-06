@@ -31,6 +31,16 @@ static char *Resource_Name[]={
  "Gold", "Silver", "Ore", "Oil", "Tech"
 };
 
+// Max number of motive types
+static const int MOTIVE_TYPE_COUNT=5;
+// Types of motives
+enum MotiveTypes {
+ Trade=0, Peace=1, Build=2, War=3, Learn=4
+};
+static char *Motive_Names[]={
+ "Trade", "Peace", "Build", "War", "Learn"
+};
+
 // Max number of planets
 static const int PLANET_COUNT=7;
 // Names that can be assigned to planets
@@ -54,6 +64,7 @@ struct Planet {
  int   ExchangeRate[5];
  int   Inventory[5];
  int   Population;
+ int   Motive;
 };
 
 // Constructs a new planet

@@ -29,6 +29,9 @@ struct Planet MakePlanet(int y, int x, char* name) {
  //set planet type within limit
  p.Type=rand() % PLANET_TYPE_COUNT;
 
+ //set inital motive within limit
+ p.Motive=rand() % MOTIVE_TYPE_COUNT;
+
  //set currency based on planet type
  p.Currency=p.Type;
 

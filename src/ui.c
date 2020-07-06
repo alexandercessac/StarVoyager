@@ -97,5 +97,7 @@ void WritePlanetDetails(struct Planet p, int y, int x){
  move(y+1, x);
  printw(" - %-*s%'d", 15, "Population: ", p.Population);
  move(y+2, x);
+ printw(" - %-*s%s", 15, "Motive: ", Motive_Names[p.Motive]);
+ move(y+3, x);
  printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[p.Type]);
 }
