@@ -1,6 +1,7 @@
 #include<ncurses.h>
 
 #include "ui.h"
+#include "game.h"
 
 #include<stdlib.h>
 
@@ -90,3 +91,11 @@ void renderDiff(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000], char
  }
 }
 
+void WritePlanetDetails(struct Planet p, int y, int x){
+ move(y, x);
+ printw(p.Name);
+ move(y+1, x);
+ printw(" - %-*s%'d", 15, "Population: ", p.Population);
+ move(y+2, x);
+ printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[p.Type]);
+}

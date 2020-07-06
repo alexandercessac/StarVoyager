@@ -99,12 +99,8 @@ int main()
 
      //clear main window to show planet detail
      clear();
-     move(3, 3);
-     printw(planets[j].Name);
-     move(3+1, 3);
-     printw(" - %-*s%'d", 15, "Population: ", planets[j].Population);
-     move(3+2, 3);
-     printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[planets[j].Type]);
+     //Write details about current plant
+     WritePlanetDetails(planets[j], 1, 3);
      //refresh changes to main window
      refresh();
 
