@@ -1,5 +1,8 @@
 #pragma once
 
+//Max amount of curency resource allowed
+static const int MAX_CURRENCY=2000000000;
+
 // Max number of planet Types
 static const int PLANET_TYPE_COUNT=5;
 // Types of planets

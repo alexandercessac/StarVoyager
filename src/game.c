@@ -39,7 +39,7 @@ struct Planet MakePlanet(int y, int x, char* name) {
  for(int i=0;i<RESOURCE_TYPE_COUNT;i++)
  {
    //Inventory holds the quantity of resource at index
-   p.Inventory[i]=rand() % 1000;
+   p.Inventory[i]=rand() % 100;
 
    //set value based on difference from currency index
    int diff = p.Type > i ? p.Type - i : i - p.Type;
@@ -50,7 +50,7 @@ struct Planet MakePlanet(int y, int x, char* name) {
  //ensure 1:1 exchange rate for currency
  p.ExchangeRate[p.Currency]=1;
  //add extra currency as this will be the main resource
- p.Inventory[p.Currency]+=10000;
+ p.Inventory[p.Currency]+=1000;
  return p;
 }
 
@@ -107,5 +107,9 @@ void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource) {
 
 // Generate planet's currency resource based on population
 void GenerateCurrency(struct Planet *p) {
- p->Inventory[p->Currency]+=(rand() % p->Population);
+ int gains = ((rand() % p->Population) + 1) /2;
+ if(MAX_CURRENCY - gains > p->Inventory[p->Currency])
+ { p->Inventory[p->Currency]+=gains; }
+ else //Planet has too much currency; trigger event?
+ { p->Inventory[p->Currency]=MAX_CURRENCY; }
 }
