@@ -40,17 +40,13 @@ int main()
  for(int j=0;j<PLANET_COUNT;j++)
  {
   while(map[tmpY][tmpX]=='0')
-//  {tmpY=rand()%LIMIT;tmpX=rand()%LIMIT;} //place randomly
-  {tmpX=tmpX+4;tmpY=tmpY+4;}
+  { tmpX=tmpX+4;tmpY=tmpY+4; }
+
   planets[j]=MakePlanet(tmpY,tmpX,Planet_Names[j]);
   map[tmpY][tmpX]='0';
-//debug
-// printw("%s%d,%d",planets[j].Name,tmpY,tmpX);
-// refresh();
-// getch();
  }
 
- //todo delay with tics
+ //set game speed
  timeout(250);
 
  //main
@@ -88,57 +84,54 @@ int main()
 
   //handle planets
   if(map[YSHIP][XSHIP] == '0'){
-  //   clear();
-  //   move(YMID, XMID-10);
-  //   printw("planets: %d!", PLANET_COUNT);
 
-  //find planet
-  for(int j=0;j<PLANET_COUNT;j++) {
-   if(planets[j].X==XSHIP&&planets[j].Y==YSHIP){
-    //found the planet matching current location
-
-    //pause for planet interaction
-    timeout(-1);
-    //clear main window to show planet detail
-    clear();
-    move(3, 3);
-    printw(planets[j].Name);
-    move(3+1, 3);
-    printw(" - %-*s%'d", 15, "Population: ", planets[j].Population);
-    move(3+2, 3);
-    printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[planets[j].Type]);
-    //refresh changes to main window
-    refresh();
+   //find planet
+   for(int j=0;j<PLANET_COUNT;j++) {
+    //generate each planet's currency resource
+    GenerateCurrency(&planets[j]);
+    //local trade happens for all planets
+    DoLocalTrade(&planets[j]);
 
     //todo: randomize exchange rates on planets
-    //todo: move options somewhere else
 
-    char* options[] = { "Trade" };
-    char* title = " Select an Action ";
-    int titleLen = 18;
-    //present options for how to interact with planet
-    //this happens in a sub window
-    int sel = SelectItem(1, options, title, titleLen);
+    if(planets[j].X==XSHIP&&planets[j].Y==YSHIP){
+     //found the planet matching current location
 
-    //clear planet info from main window or leave to be shown with trade menu?
-    //clear(); refresh();
+     //clear main window to show planet detail
+     clear();
+     move(3, 3);
+     printw(planets[j].Name);
+     move(3+1, 3);
+     printw(" - %-*s%'d", 15, "Population: ", planets[j].Population);
+     move(3+2, 3);
+     printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[planets[j].Type]);
+     //refresh changes to main window
+     refresh();
 
-    //Trade
-    if(sel == 0)
-    { Xfer(5, INVENTORY, planets[j].Inventory, planets[j].ExchangeRate, planets[j].Currency, Resource_Name); }
+     //todo: move options somewhere else
 
-   }
-   //local trade happens for all planets
-   DoLocalTrade(&planets[j]);
-   //generate planet's currency resource for all planets
-   GenerateCurrency(&planets[j]);
-  }
-   //resume
-   timeout(150);
+     char* options[] = { "Trade" };
+     char* title = " Select an Action ";
+     int titleLen = 18;
+     //present options for how to interact with planet
+     //this happens in a sub window
+     int sel = SelectItem(1, options, title, titleLen);
+
+     //clear planet info from main window or leave to be shown with trade menu?
+     //clear(); refresh();
+
+     //Trade
+     if(sel == 0)
+     { Xfer(5, INVENTORY, planets[j].Inventory, planets[j].ExchangeRate, planets[j].Currency, Resource_Name); }
+
+   } //end planet interaction
+
+  } //end planet loop
+
    //render entire map as window has changed
    render(YMAX,XMAX,YDIFF,XDIFF,map);
-
-  } else //just moving; only render diffs
+  }
+  else //just moving; only render diffs
   { renderDiff(YMAX,XMAX,YDIFF,XDIFF,map,direction); }
 
   //map is rendered behind ship
@@ -149,15 +142,15 @@ int main()
   //draw changes to screen
   refresh();
  }
-//pressed 'q'; exit input loop
+ //pressed 'q'; end input loop
 
-//end
+ //end
  timeout(-1);
  move(2, XMID-9);
  printw("ANY KEY TO EXIT...");
 
  getch();
  fin();//ui.h
-// free(map);
+ //free(map);
  return 0;
 }
