@@ -1,5 +1,5 @@
 # StarVoyager
-Travel the stars on your console
+Travel the stars on your console!
 
 ## Requires ncurses dev libraries to compile
 If running a debian based distro:
@@ -30,7 +30,7 @@ Pressing the left arrow when a given resource is selected will attempt to purcha
 Pressing the `>` key will attempt to sell as much of the selected resource as possible.
 Pressing the `<` key will attempt to buy as much of the selected resource as possible.
 
-Pressing the `q` key will exit the planet's trade menu
+Pressing the `q` key will exit the planet's trade menu.
 ```
      ┌────────────────────────────────────────────────────────────────┐
      │ Inventory           Price in Gold                Shop          │
