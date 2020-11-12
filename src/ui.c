@@ -1,13 +1,14 @@
 #include<ncurses.h>
 
 #include "ui.h"
+#include "game.h"
 
 #include<stdlib.h>
 
 void init() {
  initscr();            //start ncurses
  cbreak();
- noecho();             //turn of echo
+ noecho();             //turn off echo
  keypad(stdscr, TRUE); //handle special keys
  curs_set(0);          // hide cursor
  //timeout(100);
@@ -27,7 +28,6 @@ int get_bg(){
 void render(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000]){
  int ystop=ymax;
  int xstop=xmax;
- int ystart=0,xstart=0;
 
  for(int y=0;y<ystop;y++){
  for(int x=0;x<xstop;x++){
@@ -37,18 +37,67 @@ void render(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000]){
   //move(0,0); printw("x:%d y:%d",xdiff,ydiff);
 }
 
-
-Coordinate* mkcoord(int x, int y) {
- Coordinate* c = malloc(sizeof(*c));
-  c->x = x;
-  c->y = y;
-  //cell->next = NULL;
-  return c;
+void renderDiff(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000], char direction){
+ int xIndex, yIndex,prev;
+ switch(direction){
+  case '<':
+   for(int y=0;y<ymax;y++){
+   for(int x=0;x<xmax;x++){
+    xIndex=(x+xdiff)%1000;
+    yIndex=(y+ydiff)%1000;
+    prev=(x+xdiff+1)%1000;
+    if(map[yIndex][prev] != map[yIndex][xIndex]){
+     mvaddch(y, x, map[yIndex][xIndex]);
+     mvaddch(y, x+1, map[yIndex][prev]);
+    }
+   }}
+   break;
+  case '>':
+    for(int y=0;y<ymax;y++){
+    for(int x=0;x<xmax;x++){
+     xIndex=(x+xdiff)%1000;
+     yIndex=(y+ydiff)%1000;
+     prev=(x+xdiff-1)%1000;
+     if(map[yIndex][prev] != map[yIndex][xIndex]){
+      mvaddch(y, x-1, map[yIndex][prev]);
+      mvaddch(y, x, map[yIndex][xIndex]);
+     }
+    }}
+    break;
+  case '^':
+    for(int y=0;y<ymax;y++){
+    for(int x=0;x<xmax;x++){
+     xIndex=(x+xdiff)%1000;
+     yIndex=(y+ydiff)%1000;
+     prev=(y+ydiff+1)%1000;
+     if(map[prev][xIndex] != map[yIndex][xIndex]){
+      mvaddch(y, x, map[yIndex][xIndex]);
+      mvaddch(y+1, x, map[prev][xIndex]);
+     }
+    }}
+    break;
+  case 'v':
+    for(int y=0;y<ymax;y++){
+    for(int x=0;x<xmax;x++){
+      xIndex=(x+xdiff)%1000;
+      yIndex=(y+ydiff)%1000;
+      prev=(y+ydiff-1)%1000;
+      if(map[prev][xIndex] != map[yIndex][xIndex]){
+       mvaddch(y, x, map[yIndex][xIndex]);
+       mvaddch(y-1, x, map[prev][xIndex]);
+      }
+     }}
+    break;
+ }
 }
 
-Grid* mkgrid(Coordinate* min, Coordinate* max){
- Grid* g = malloc(sizeof(*g));
- g->min = min;
- g->max = max;
- return g;
+void WritePlanetDetails(struct Planet p, int y, int x){
+ move(y, x);
+ printw(p.Name);
+ move(y+1, x);
+ printw(" - %-*s%'d", 15, "Population: ", p.Population);
+ move(y+2, x);
+ printw(" - %-*s%s", 15, "Motive: ", Motive_Names[p.Motive]);
+ move(y+3, x);
+ printw(" - %-*s%s", 15, "Inhabitants: ", PlanetTypeNames[p.Type]);
 }

@@ -7,6 +7,7 @@ Travel the stars on your console
 
 Use arrow keys to move. Holding down an arrow will move faster.
 
+'q' to quit
 # Objective
 
 Find the planet.

@@ -1,2 +1,4 @@
 make:
-	gcc -o StarVoyager src/main.c src/ui.c -lncurses
+	gcc -o StarVoyager src/main.c src/ui.c src/game.c src/mnu.c -lncurses
+run:
+	make && ./StarVoyager
