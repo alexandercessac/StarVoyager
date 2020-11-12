@@ -28,10 +28,10 @@ Pressing the right arrow when a given resource is selected will attempt to sell 
 Pressing the left arrow when a given resource is selected will attempt to purchase 1 unit of that resource for the associated price.
 
 Pressing the `>` key will attempt to sell as much of the selected resource as possible.
-Pressing the '<' key will attempt to buy as much of the selected resource as possible.
+Pressing the `<` key will attempt to buy as much of the selected resource as possible.
 
 Pressing the `q` key will exit the planet's trade menu
-
+```
      ┌────────────────────────────────────────────────────────────────┐
      │ Inventory           Price in Gold                Shop          │
      │ ────────────────────────────────────────────────────────────── │
@@ -42,8 +42,8 @@ Pressing the `q` key will exit the planet's trade menu
      │ Tech      :0         10                  Tech      :86         │
      │                                                                │
      └────────────────────────────────────────────────────────────────┘
-
-In the above Trading menu, selling 1 unit of 'Ore' would result in 29 units of gold moved to the player's inventory from the planet's shop.
+```
+In the above Trading menu, selling 1 unit of `Ore` would result in 29 units of gold moved to the player's inventory from the planet's shop.
 
 # Objective
 
