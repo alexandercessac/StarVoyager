@@ -59,6 +59,14 @@ int main()
    case KEY_LEFT: direction='<'; break;
    case KEY_DOWN: direction='v'; break;
    case KEY_UP:   direction='^'; break;
+   case KEY_RESIZE: //Window has been resized;
+    //clear previous location of ship
+    mvaddch(YMID,XMID,' '); //todo: draw correct character from map
+    //set new screen size
+    getmaxyx(stdscr, YMAX, XMAX);
+    //find new screen center
+    YMID=YMAX/2;XMID=XMAX/2;
+    break;
    case 'z':
     //increase speed
     //if(delay>25){delay-=25;}
@@ -79,6 +87,7 @@ int main()
    case '^': if(--YDIFF==-1){YDIFF=LIMIT-1;}
     break;
   }
+
   //track ship position on map
   XSHIP=(XMID+XDIFF)%1000;YSHIP=(YMID+YDIFF)%1000;
 
