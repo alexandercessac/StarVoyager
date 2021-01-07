@@ -14,8 +14,45 @@ int main()
 
  setlocale(LC_NUMERIC,"");//formatting
  init();//ui.h
-
  int YMAX, XMAX, XMID, YMID, YDIFF, XDIFF, XSHIP, YSHIP;
+
+ //set screen size
+ getmaxyx(stdscr, YMAX, XMAX);
+ //find screen center
+ YMID=YMAX/2;XMID=XMAX/2;
+ //todo: move to ui.c
+ ////////Splash/////////////
+ for(int y=YMID/2;y<YMAX-(YMID/2);y++){
+ for(int x=XMID/2;x<XMAX-(XMID/2);x++){
+//  if((x+y) % x == 0)
+   mvaddch(y,x, get_bg());
+ }}
+
+ mvaddch(YMID-2,XMID-2,'s');
+ mvaddch(YMID-2,XMID-1,'t');
+ mvaddch(YMID-2,XMID  ,'a');
+ mvaddch(YMID-2,XMID+1,'r');
+ mvaddch(YMID-1,XMID-3,'v');
+ mvaddch(YMID-1,XMID-2,'o');
+ mvaddch(YMID-1,XMID-1,'y');
+ mvaddch(YMID-1,XMID  ,'a');
+ mvaddch(YMID-1,XMID+1,'g');
+ mvaddch(YMID-1,XMID+2,'e');
+ mvaddch(YMID-1,XMID+3,'r');
+ refresh();
+ //set game speed
+ timeout(500);
+ for(int i=0;i<7;i++) {
+  mvaddch(YMID,XMID-3+i, '>');
+  refresh();
+  getch();
+  mvaddch(YMID,XMID-3+i, ' ');
+ }
+ clear();
+ refresh();
+
+ /////////////////////////
+
  //set screen size
  getmaxyx(stdscr, YMAX, XMAX);
  //find screen center
