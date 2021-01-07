@@ -24,6 +24,43 @@ int get_bg(){
  else {return ' ';}
 }
 
+void DoSplashIntro(int YMAX, int XMAX, int YMID, int XMID) {
+ //get screen size
+ getmaxyx(stdscr, YMAX, XMAX);
+ //find screen center
+ YMID=YMAX/2;XMID=XMAX/2;
+
+ //create background
+ for(int y=YMID/2;y<YMAX-(YMID/2);y++){
+ for(int x=XMID/2;x<XMAX-(XMID/2);x++){
+   mvaddch(y,x, get_bg());
+ }}
+ //print 'star voyager'
+ mvaddch(YMID-2,XMID-2,'s');
+ mvaddch(YMID-2,XMID-1,'t');
+ mvaddch(YMID-2,XMID  ,'a');
+ mvaddch(YMID-2,XMID+1,'r');
+ mvaddch(YMID-1,XMID-3,'v');
+ mvaddch(YMID-1,XMID-2,'o');
+ mvaddch(YMID-1,XMID-1,'y');
+ mvaddch(YMID-1,XMID  ,'a');
+ mvaddch(YMID-1,XMID+1,'g');
+ mvaddch(YMID-1,XMID+2,'e');
+ mvaddch(YMID-1,XMID+3,'r');
+ refresh();
+ //set game speed
+ timeout(550);
+ //move ship image across the screen
+ for(int i=0;i<8;i++) {
+  mvaddch(YMID,XMID-3+i, '>');
+  refresh();
+  getch();
+  mvaddch(YMID,XMID-3+i, '-');
+ }
+ clear();
+ refresh();
+}
+
 //print section of the map
 void render(int ymax,int xmax,int ydiff,int xdiff, int map[1000][1000]){
  int ystop=ymax;

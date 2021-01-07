@@ -14,8 +14,12 @@ int main()
 
  setlocale(LC_NUMERIC,"");//formatting
  init();//ui.h
+ int YMAX, XMAX, YMID, XMID, YDIFF, XDIFF, YSHIP, XSHIP;
 
- int YMAX, XMAX, XMID, YMID, YDIFF, XDIFF, XSHIP, YSHIP;
+ /////////////////////////////////
+ DoSplashIntro(YMAX, XMAX, YMID, XMID);
+ /////////////////////////////////
+
  //set screen size
  getmaxyx(stdscr, YMAX, XMAX);
  //find screen center
