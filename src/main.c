@@ -20,14 +20,6 @@ int main()
  DoSplashIntro(YMAX, XMAX, YMID, XMID);
  /////////////////////////////////
 
- //set screen size
- getmaxyx(stdscr, YMAX, XMAX);
- //find screen center
- YMID=YMAX/2;XMID=XMAX/2;
- //set ship
- XSHIP=XMID;YSHIP=YMID;
- //set screen position
- YDIFF=XDIFF=0;
  //set map
  int LIMIT = 1000;
  int map[LIMIT][LIMIT];
@@ -50,8 +42,21 @@ int main()
   map[tmpY][tmpX]='0';
  }
 
+ //set screen size
+ getmaxyx(stdscr, YMAX, XMAX);
+ //find screen center
+ YMID=YMAX/2;XMID=XMAX/2;
+ //set ship
+ XSHIP=XMID;YSHIP=YMID;
+ //set screen position
+ YDIFF=XDIFF=0;
+
+ render(YMAX,XMAX,YDIFF,XDIFF,map);
+ refresh();
+
  //set game speed
  timeout(250);
+ getch();
 
  //main
  int direction = '>';
@@ -70,6 +75,9 @@ int main()
     getmaxyx(stdscr, YMAX, XMAX);
     //find new screen center
     YMID=YMAX/2;XMID=XMAX/2;
+    XSHIP=(XMID+XDIFF)%1000;YSHIP=(YMID+YDIFF)%1000;
+    render(YMAX,XMAX,YDIFF,XDIFF,map);
+    refresh();
     break;
    case 'z':
     //increase speed
