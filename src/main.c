@@ -112,8 +112,11 @@ int main()
     GenerateCurrency(&planets[j]);
     //local trade happens for all planets
     DoLocalTrade(&planets[j]);
+    //planet performs actions based on motive
+    DoMotivation(&planets[j]);
+    if(planets[j].Motivation>=10) { DoMotive(&planets[j], planets); }
 
-    //todo: randomize exchange rates on planets
+    //TODO: randomize exchange rates on planets
 
     if(planets[j].X==XSHIP&&planets[j].Y==YSHIP){
      //found the planet matching current location
