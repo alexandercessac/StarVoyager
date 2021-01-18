@@ -13,6 +13,8 @@ enum PlanetType {
  Agressive=3,
  Advanved=4
 };
+// TODO: move some types to motive
+//+new types that influence motives
 static char *PlanetTypeNames[]={
  "Greedy",
  "Spiritual",
@@ -56,30 +58,48 @@ static char *Planet_Names[]={
 
 // Planet definition
 struct Planet {
- int   X;
- int   Y;
- char* Name;
- enum  PlanetType Type;
- enum  ResourceType Currency;
- int   ExchangeRate[5];
- int   Inventory[5];
- int   Population;
- int   Motive;
+ int            X;
+ int            Y;
+ char*          Name;
+ enum           PlanetType Type;
+ enum           ResourceType Currency;
+ int            ExchangeRate[5];
+ int            Inventory[5];
+ int            Population;
+ int            Army;
+ int            Monuments;
+ int            Motive;
+ int            Motivation;
+ struct Planet* Target;
 };
 
 // Constructs a new planet
 struct Planet MakePlanet(int y, int x, char* name);
 
+// Do actions to increase motivation
+void DoMotivation(struct Planet* p);
+// Do action related to motive (assuming full motivation)
+void DoMotive(struct Planet* p, struct Planet planets[PLANET_COUNT]);
+
 // Exchange resources and currency
 void DoLocalTrade(struct Planet* p);
+
 // Exchange currency for resource at exchange rate
-void Buy(struct Planet* p, int resource);
+bool Buy(struct Planet* p, int resource, int count);
 // Exchange resource for currency at exchange rate
-void Sell(struct Planet* p, int resource);
+bool Sell(struct Planet* p, int resource, int count);
 
 // Generate currency resource based on population
 void GenerateCurrency(struct Planet *p);
 
+//
+void GrowPopulation(struct Planet *p);
+
 // Trade a resource from buying planet for selling planet's currency at
 //+the exchange rate of selling planet
-void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource);
+void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource, int count);
+// Attack target planet attempting to take resources
+void PlanetWar(struct Planet* p);
+// Greatly reduce targe planet's motivation
+//+if target planet's motivation is war
+void PlanetPeace(struct Planet* p);
