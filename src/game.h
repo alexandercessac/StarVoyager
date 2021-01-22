@@ -43,8 +43,10 @@ static char *Motive_Names[]={
  "Trade", "Peace", "Build", "War", "Learn"
 };
 
-// Max number of planets
+// Max number of planets per galaxy
 static const int PLANET_COUNT=7;
+// Max number of galaxies
+static const int GALAXY_COUNT=3;
 // Names that can be assigned to planets
 static char *Planet_Names[]={
  "Earth",
@@ -71,6 +73,16 @@ struct Planet {
  int            Motive;
  int            Motivation;
  struct Planet* Target;
+};
+
+//static const int GALAXY_MAP_SIZE=100;
+struct Galaxy {
+ int            X;
+ int            Y;
+// int            Map[100][100];
+ char*          Name;
+ int            PlanetCount;
+ struct Planet* Planets;
 };
 
 // Constructs a new planet
@@ -103,3 +115,7 @@ void PlanetWar(struct Planet* p);
 // Greatly reduce targe planet's motivation
 //+if target planet's motivation is war
 void PlanetPeace(struct Planet* p);
+
+// Allow planet to perform day to day actions
+//+such as local commerce and trade
+void DoPlanetActions(struct Planet* p);

@@ -297,3 +297,17 @@ void GenerateCurrency(struct Planet *p) {
  else //Planet has too much currency; trigger event?
  { p->Inventory[p->Currency]=MAX_CURRENCY; }
 }
+
+void DoPlanetActions(struct Planet *p) {
+ //generate each planet's currency resource
+ GenerateCurrency(p);
+ //local trade happens for all planets
+ DoLocalTrade(p);
+ //planet performs actions based on motive
+ DoMotivation(p);
+
+//TODO: this is being done in main.c
+//      not sure if it makes sense to pass in planet array here
+// if(p->Motivation>=10)
+// { DoMotive(&galaxy->Planets[j], galaxy->Planets); }
+}
