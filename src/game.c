@@ -265,7 +265,7 @@ void PlanetTrade(struct Planet* pSell, struct Planet* pBuy, int resource, int co
 
 void PlanetWar(struct Planet* p) {
  if(!p->Target) {return;}
- int x=p->Army-p->Target->Army;
+ int x=p->Army - p->Target->Army;
 
  if(x>0) {
   //win
@@ -276,7 +276,7 @@ void PlanetWar(struct Planet* p) {
   p->Army-=x;
  }
  else {
-  p->Target->Army-=x;
+  p->Target->Army+=x;
   p->Army=0;
   p->Inventory[p->Currency]-=x;
   p->Target->Inventory[p->Currency]+=x;
@@ -296,4 +296,18 @@ void GenerateCurrency(struct Planet *p) {
  { p->Inventory[p->Currency]+=gains; }
  else //Planet has too much currency; trigger event?
  { p->Inventory[p->Currency]=MAX_CURRENCY; }
+}
+
+void DoPlanetActions(struct Planet *p) {
+ //generate each planet's currency resource
+ GenerateCurrency(p);
+ //local trade happens for all planets
+ DoLocalTrade(p);
+ //planet performs actions based on motive
+ DoMotivation(p);
+
+//TODO: this is being done in main.c
+//      not sure if it makes sense to pass in planet array here
+// if(p->Motivation>=10)
+// { DoMotive(&galaxy->Planets[j], galaxy->Planets); }
 }

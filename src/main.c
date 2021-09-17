@@ -12,8 +12,8 @@
 int main()
 {
 
- setlocale(LC_NUMERIC,"");//formatting
- init();//ui.h
+ setlocale(LC_NUMERIC,"");//set formatting for numbers (x,xxx.xx)
+ init();//from ui.h
  int YMAX, XMAX, YMID, XMID, YDIFF, XDIFF, YSHIP, XSHIP;
 
  /////////////////////////////////
@@ -31,16 +31,29 @@ int main()
  //Player starting inventory
  int INVENTORY[]={10,0,3,0,0};
 
- int tmpY=0,tmpX=0;
- struct Planet* planets=malloc(sizeof(struct Planet)*PLANET_COUNT);
- for(int j=0;j<PLANET_COUNT;j++)
- {
-  while(map[tmpY][tmpX]=='0')
-  { tmpX=tmpX+4;tmpY=tmpY+4; }
+ //Begin Set Galaxies
+ struct Galaxy galaxies[GALAXY_COUNT];
+ //Pointer to current galaxy
+ struct Galaxy* galaxy = NULL;// = malloc(sizeof(struct Galaxy) * GALAXY_COUNT);
 
-  planets[j]=MakePlanet(tmpY,tmpX,Planet_Names[j]);
-  map[tmpY][tmpX]='0';
- }
+ //Create galaxies
+ //todo: method for making galaxies
+ for(int i=0;i<GALAXY_COUNT;i++) {
+  //spread out galaxies
+  galaxies[i].X = 5 + (i*10);
+  galaxies[i].Y = 5 + (i*10);
+  //todo: random names and locations
+  galaxies[i].Name = "Milky Way";
+  //todo: random planet count
+  galaxies[i].PlanetCount = PLANET_COUNT;
+  galaxies[i].Planets = malloc(sizeof(struct Planet)*PLANET_COUNT);
+
+  //set planets for galaxy
+  for(int j=0;j<galaxies[i].PlanetCount;j++)
+  { galaxies[i].Planets[j]=MakePlanet(5+(5*j),10+(5*j),Planet_Names[j]); }
+
+  map[galaxies[i].Y][galaxies[i].X] = '@';
+ } //End Set Galaxies
 
  //set screen size
  getmaxyx(stdscr, YMAX, XMAX);
@@ -50,8 +63,7 @@ int main()
  XSHIP=XMID;YSHIP=YMID;
  //set screen position
  YDIFF=XDIFF=0;
-
- render(YMAX,XMAX,YDIFF,XDIFF,map);
+ render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
  refresh();
 
  //set game speed
@@ -75,8 +87,8 @@ int main()
     getmaxyx(stdscr, YMAX, XMAX);
     //find new screen center
     YMID=YMAX/2;XMID=XMAX/2;
-    XSHIP=(XMID+XDIFF)%1000;YSHIP=(YMID+YDIFF)%1000;
-    render(YMAX,XMAX,YDIFF,XDIFF,map);
+     XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
+     render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
     refresh();
     break;
    case 'z':
@@ -88,89 +100,118 @@ int main()
     //if(delay<150){delay+=25;}
     break;
   }
-  //move based on direction
-  switch (direction){
-   case '>': if(++XDIFF==LIMIT){XDIFF=0;}
-    break;
-   case '<': if(--XDIFF==-1){XDIFF=LIMIT-1;}
-    break;
-   case 'v': if(++YDIFF==LIMIT){YDIFF=0;}
-    break;
-   case '^': if(--YDIFF==-1){YDIFF=LIMIT-1;}
-    break;
-  }
+   //move based on direction
+    switch (direction){
+    case '>': if(++XDIFF==LIMIT){XDIFF=0;}
+     break;
+    case '<': if(--XDIFF==-1){XDIFF=LIMIT-1;}
+     break;
+    case 'v': if(++YDIFF==LIMIT){YDIFF=0;}
+     break;
+    case '^': if(--YDIFF==-1){YDIFF=LIMIT-1;}
+     break;
+   }
 
   //track ship position on map
-  XSHIP=(XMID+XDIFF)%1000;YSHIP=(YMID+YDIFF)%1000;
+  XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
+  if(galaxy) {
+   if(map[YSHIP][XSHIP] == '*') { //leaving galaxy
+    //remove current galaxies planets from map
+    for(int j=0;j<PLANET_COUNT;j++)
+    { map[galaxy->Planets[j].Y][galaxy->Planets[j].X]=get_bg(); }
+    //add galaxies back to map
+    for(int j=0;j<GALAXY_COUNT;j++)
+    { map[galaxies[j].Y][galaxies[j].X]='@'; }
 
-  //handle planets
-  if(map[YSHIP][XSHIP] == '0'){
+    //set ship position relative to the exited galaxy
+    XDIFF=(galaxy->X-XMID+LIMIT)%LIMIT;YDIFF=(galaxy->Y-YMID+LIMIT)%LIMIT;
+    //track ship position on map
+    XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
 
-   //find planet
-   for(int j=0;j<PLANET_COUNT;j++) {
-    //generate each planet's currency resource
-    GenerateCurrency(&planets[j]);
-    //local trade happens for all planets
-    DoLocalTrade(&planets[j]);
-    //planet performs actions based on motive
-    DoMotivation(&planets[j]);
-    if(planets[j].Motivation>=10) { DoMotive(&planets[j], planets); }
+    //remove escape vector on map
+    map[0][0] = ' ';
+    //no longer in a galaxy
+    galaxy=NULL;
+    //redraw upadated map
+    clear();
+    render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
+   } //end leaving galaxy
+   else if(map[YSHIP][XSHIP] == '0') { //entering planet
+    //allow each planet in galaxy to perform actions
+    //and interact with the planet the user has reached
+    for(int j=0;j<PLANET_COUNT;j++) {
+     //each planet performs local actions
+     DoPlanetActions(&galaxy->Planets[j]);
 
-    //TODO: randomize exchange rates on planets
+     //planet performs motive if enough motivation is present
+     if(galaxy->Planets[j].Motivation>=10)
+     { DoMotive(&galaxy->Planets[j], galaxy->Planets); }
 
-    if(planets[j].X==XSHIP&&planets[j].Y==YSHIP){
+     //TODO: randomize exchange rates on planets
+
      //found the planet matching current location
+     if(galaxy->Planets[j].X==XSHIP&&galaxy->Planets[j].Y==YSHIP)
+     { PlanetInteraction(INVENTORY, &galaxy->Planets[j]); }
 
-     //clear main window to show planet detail
-     clear();
-     //Write details about current plant
-     WritePlanetDetails(planets[j], 1, 3);
-     //refresh changes to main window
-     refresh();
+    } //end planet loop
 
-     //todo: move options somewhere else
-
-     char* options[] = { "Trade" };
-     char* title = " Select an Action ";
-     int titleLen = 18;
-     //present options for how to interact with planet
-     //this happens in a sub window
-     int sel = SelectItem(1, options, title, titleLen);
-
-     //clear planet info from main window or leave to be shown with trade menu?
-     //clear(); refresh();
-
-     //Trade
-     if(sel == 0)
-     { Xfer(5, INVENTORY, planets[j].Inventory, planets[j].ExchangeRate, planets[j].Currency, Resource_Name); }
-
-   } //end planet interaction
-
-  } //end planet loop
-
-   //render entire map as window has changed
-   render(YMAX,XMAX,YDIFF,XDIFF,map);
+    //leaving planet; render entire map as window has changed
+    render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
+   } //end entering planet
+   else //moving through current galaxy
+   { renderDiff(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map,direction); }
   }
-  else //just moving; only render diffs
-  { renderDiff(YMAX,XMAX,YDIFF,XDIFF,map,direction); }
+  else { //not in a galaxy
+   if(map[YSHIP][XSHIP] == '@') { //entering a galaxy
+    for(int i=0;i<GALAXY_COUNT;i++) {
+     if(galaxies[i].X==XSHIP&&galaxies[i].Y==YSHIP) {
+      //set pointer to galaxy with matching coordinates
+      galaxy=&galaxies[i];
+
+      //set planets on map from galaxy
+      for(int j=0;j<PLANET_COUNT;j++)
+      { map[galaxy->Planets[j].Y][galaxy->Planets[j].X]='0'; }
+      //remove galaxies from map
+      for(int j=0;j<GALAXY_COUNT;j++)
+      { map[galaxies[j].Y][galaxies[j].X]=get_bg(); }
+      //Set position to galaxy entrance
+      XDIFF=(LIMIT-XMID);YDIFF=(LIMIT-YMID);
+      //track ship position on map
+      XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
+      //set galaxy entrance on map
+      map[0][0] = '*';
+      //redraw upadated map
+      clear();
+      render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
+     }
+    }
+   }//end entering galaxy
+   else //moving through universe
+   { renderDiff(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map,direction); }
+  }
+  //end of collision detection
 
   //map is rendered behind ship
   //ship is written to the middle of the screen
   mvaddch(YMID,XMID,direction);
+
   //debug: write location of ship
-  move(0,0); printw("x:%d y:%d",XSHIP,YSHIP);
-  //draw changes to screen
-  refresh();
- }
- //pressed 'q'; end input loop
+  move(0,0); printw("x:%d y:%d    ",XSHIP,YSHIP);
+  //move(1,0); printw("x:%d y:%d",galaxy->X,galaxy->Y);
+
+  refresh();                  //draw changes to screen
+ } //end input loop
+
+ //pressed 'q'; exited input loop
 
  //end
- timeout(-1);
- move(2, XMID-9);
- printw("ANY KEY TO EXIT...");
+ move(2, XMID-9);              //move to middle of screen
+ printw("ANY KEY TO EXIT..."); //write exit text
 
- getch();
- fin();//ui.h
+ timeout(-1);                  //reset timout
+ getch();                      //wait for user confirmation
+
+ fin();//from ui.h
  //free(map);
  return 0;
 }
