@@ -12,12 +12,12 @@
 int main()
 {
 
- setlocale(LC_NUMERIC,"");//formatting
- init();//ui.h
+ setlocale(LC_NUMERIC,"");//set formatting for numbers (x,xxx.xx)
+ init();//from ui.h
  int YMAX, XMAX, YMID, XMID, YDIFF, XDIFF, YSHIP, XSHIP;
 
  /////////////////////////////////
-// DoSplashIntro(YMAX, XMAX, YMID, XMID);
+ // DoSplashIntro(YMAX, XMAX, YMID, XMID);
  /////////////////////////////////
 
  //set map
@@ -36,21 +36,25 @@ int main()
  //Pointer to current galaxy
  struct Galaxy* galaxy = NULL;// = malloc(sizeof(struct Galaxy) * GALAXY_COUNT);
 
+ //Create galaxies
+ //todo: method for making galaxies
  for(int i=0;i<GALAXY_COUNT;i++) {
+  //spread out galaxies
   galaxies[i].X = 5 + (i*10);
   galaxies[i].Y = 5 + (i*10);
+  //todo: random names and locations
   galaxies[i].Name = "Milky Way";
+  //todo: random planet count
   galaxies[i].PlanetCount = PLANET_COUNT;
   galaxies[i].Planets = malloc(sizeof(struct Planet)*PLANET_COUNT);
 
-  int tmpY=0,tmpX=0;
-  for(int j=0;j<PLANET_COUNT;j++)
-  {
-   galaxies[i].Planets[j]=MakePlanet(5+(5*j),10+(5*j),Planet_Names[j]);
-  }
+  //set planets for galaxy
+  for(int j=0;j<galaxies[i].PlanetCount;j++)
+  { galaxies[i].Planets[j]=MakePlanet(5+(5*j),10+(5*j),Planet_Names[j]); }
 
   map[galaxies[i].Y][galaxies[i].X] = '@';
  }
+ //End Set Galaxies
 
  //set screen size
  getmaxyx(stdscr, YMAX, XMAX);
@@ -65,7 +69,7 @@ int main()
 
  //set game speed
  timeout(250);
-  getch();
+ getch();
 
  //main
  int direction = '>';
@@ -109,17 +113,18 @@ int main()
      break;
    }
 
- //track ship position on map
- XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
+  //track ship position on map
+  XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
   if(galaxy) {
    if(map[YSHIP][XSHIP] == '*') { //leaving galaxy
-    //remove planets on map from galaxy
+    //remove current galaxies planets from map
     for(int j=0;j<PLANET_COUNT;j++)
     { map[galaxy->Planets[j].Y][galaxy->Planets[j].X]=get_bg(); }
-    //remove galaxies from map
+    //add galaxies back to map
     for(int j=0;j<GALAXY_COUNT;j++)
     { map[galaxies[j].Y][galaxies[j].X]='@'; }
 
+    //set ship position relative to the exited galaxy
     XDIFF=(galaxy->X-XMID+LIMIT)%LIMIT;YDIFF=(galaxy->Y-YMID+LIMIT)%LIMIT;
     //track ship position on map
     XSHIP=(XMID+XDIFF)%LIMIT;YSHIP=(YMID+YDIFF)%LIMIT;
@@ -131,12 +136,11 @@ int main()
     //redraw upadated map
     clear();
     render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
-   }
+   } //end leaving galaxy
    else if(map[YSHIP][XSHIP] == '0') { //entering planet
     //allow each planet in galaxy to perform actions
     //and interact with the planet the user has reached
     for(int j=0;j<PLANET_COUNT;j++) {
-
      //each planet performs local actions
      DoPlanetActions(&galaxy->Planets[j]);
 
@@ -145,6 +149,7 @@ int main()
      { DoMotive(&galaxy->Planets[j], galaxy->Planets); }
 
      //TODO: randomize exchange rates on planets
+
      //found the planet matching current location
      if(galaxy->Planets[j].X==XSHIP&&galaxy->Planets[j].Y==YSHIP)
      { PlanetInteraction(INVENTORY, &galaxy->Planets[j]); }
@@ -153,7 +158,7 @@ int main()
 
     //leaving planet; render entire map as window has changed
     render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
-   }
+   } //end entering planet
    else //moving through current galaxy
    { renderDiff(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map,direction); }
   }
@@ -181,28 +186,33 @@ int main()
       render(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map);
      }
     }
-   }
+   }//end entering galaxy
    else //moving through universe
    { renderDiff(YMAX,XMAX,YDIFF,XDIFF,LIMIT,map,direction); }
   }
+  //end of collision detection
+
   //map is rendered behind ship
   //ship is written to the middle of the screen
   mvaddch(YMID,XMID,direction);
+
   //debug: write location of ship
   move(0,0); printw("x:%d y:%d    ",XSHIP,YSHIP);
   //move(1,0); printw("x:%d y:%d",galaxy->X,galaxy->Y);
-  //draw changes to screen
-  refresh();
- }
- //pressed 'q'; end input loop
+
+  refresh();                  //draw changes to screen
+ } //end input loop
+
+ //pressed 'q'; exited input loop
 
  //end
- timeout(-1);
- move(2, XMID-9);
- printw("ANY KEY TO EXIT...");
+ move(2, XMID-9);              //move to middle of screen
+ printw("ANY KEY TO EXIT..."); //write exit text
 
- getch();
- fin();//ui.h
+ timeout(-1);                  //reset timout
+ getch();                      //wait for user confirmation
+
+ fin();//from ui.h
  //free(map);
  return 0;
 }
