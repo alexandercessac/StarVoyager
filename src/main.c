@@ -53,8 +53,7 @@ int main()
   { galaxies[i].Planets[j]=MakePlanet(5+(5*j),10+(5*j),Planet_Names[j]); }
 
   map[galaxies[i].Y][galaxies[i].X] = '@';
- }
- //End Set Galaxies
+ } //End Set Galaxies
 
  //set screen size
  getmaxyx(stdscr, YMAX, XMAX);
