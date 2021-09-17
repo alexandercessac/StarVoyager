@@ -17,7 +17,7 @@ int main()
  int YMAX, XMAX, YMID, XMID, YDIFF, XDIFF, YSHIP, XSHIP;
 
  /////////////////////////////////
- // DoSplashIntro(YMAX, XMAX, YMID, XMID);
+ DoSplashIntro(YMAX, XMAX, YMID, XMID);
  /////////////////////////////////
 
  //set map
